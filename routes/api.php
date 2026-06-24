@@ -7,10 +7,8 @@ use App\Http\Controllers\Api\AdminController;
 // use App\Http\Controllers\Api\NurseController;
 // use App\Http\Controllers\Api\PharmacyController;
 
-// Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
 
-// Rutas protegidas por token
 Route::middleware(['auth:sanctum'])->group(function () {
     
     // Rutas de autenticación
@@ -19,7 +17,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/verify-token', [AuthController::class, 'verifyToken']);
     
     // ==========================================
-    // RUTAS PARA MÉDICOS - COMENTADAS
+    // RUTAS PARA MÉDICOS 
     // ==========================================
     // Route::middleware(['role:Médico A,Médico B,Médico C,Especialista,Urgenciólogo'])->prefix('doctor')->group(function () {
     //     Route::get('/patients', [DoctorController::class, 'getPatients']);
@@ -28,7 +26,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // });
     
     // ==========================================
-    // RUTAS PARA ENFERMERAS - COMENTADAS
+    // RUTAS PARA ENFERMERAS 
     // ==========================================
     // Route::middleware(['role:Enfermera A,Enfermera B,Enfermera C'])->prefix('nurse')->group(function () {
     //     Route::post('/vital-signs', [NurseController::class, 'storeVitalSigns']);
@@ -36,7 +34,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // });
     
     // ==========================================
-    // RUTAS PARA FARMACIA - COMENTADAS
+    // RUTAS PARA FARMACIA 
     // ==========================================
     // Route::middleware(['role:Farmacéutico,Admin Farmacia'])->prefix('pharmacy')->group(function () {
     //     Route::get('/inventory', [PharmacyController::class, 'getInventory']);
@@ -68,9 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/patients', [AdminController::class, 'getPatients']); 
         Route::put('/patients/{id}/status', [AdminController::class, 'updatePatientStatus']);
         
-        // ==========================================
-        // 🏥 URGENCIAS
-        // ==========================================
+        //  URGENCIAS
         Route::prefix('emergency')->group(function () {
             Route::get('/dashboard', [AdminController::class, 'apiEmergencyDashboard']);
             Route::post('/patient', [AdminController::class, 'apiStoreTriage']);
@@ -107,21 +103,42 @@ Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin
     Route::get('/hospital-live', [AdminController::class, 'apiHospitalLive']);
 });
 
-// RUTAS PARA FINANZAS
-Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
-    Route::get('/finanzas/dashboard', [AdminController::class, 'apiFinanzasDashboard']);
-    Route::post('/finanzas/verify-pin', [AdminController::class, 'apiFinanzasVerifyPin']);
-    Route::post('/finanzas/invoice', [AdminController::class, 'apiFinanzasStoreInvoice']);
-    Route::put('/finanzas/invoice/{id}/status', [AdminController::class, 'apiFinanzasUpdateInvoiceStatus']);
-    Route::delete('/finanzas/invoice/{id}', [AdminController::class, 'apiFinanzasDeleteInvoice']);
-    Route::post('/finanzas/insurance', [AdminController::class, 'apiFinanzasStoreInsurance']);
-    Route::put('/finanzas/insurance/{id}/status', [AdminController::class, 'apiFinanzasUpdateInsuranceStatus']);
-    Route::delete('/finanzas/insurance/{id}', [AdminController::class, 'apiFinanzasDeleteInsurance']);
-});
+
 
 // RUTAS PARA AUDITORIA
 Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
     Route::get('/auditoria/dashboard', [AdminController::class, 'apiAuditoriaDashboard']);
 });
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::get('/bigdata/dashboard', [AdminController::class, 'apiBigDataDashboard']);
+    Route::post('/bigdata/run-etl', [AdminController::class, 'apiBigDataRunETL']);
+});
+// RUTAS PARA ACTIVIDAD SOSPECHOSA
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::get('/suspicious-activity', [AdminController::class, 'apiGetSuspiciousActivity']);
+});
 
+// RUTAS PARA MONITOR LIVE
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::get('/monitor-live', [AdminController::class, 'apiGetMonitorLive']);
+});
+// RUTAS PARA MAPA DE CALOR
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::get('/heatmap', [AdminController::class, 'apiGetHeatmap']);
+});
+// RUTAS PARA INGESTA DE DATOS
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::post('/ingesta/upload', [AdminController::class, 'apiUploadCSV']);
+    Route::get('/ingesta/preview', [AdminController::class, 'apiGetCSVPreview']);
+});
+// RUTAS PARA LIMPIEZA DE DATOS
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::post('/clean-data', [AdminController::class, 'apiCleanData']);
+    Route::get('/clean-result', [AdminController::class, 'apiGetCleanResult']);
+});
+// RUTAS PARA FINANZAS
+Route::middleware(['role:SuperAdmin,Administrador Hospitalario'])->prefix('admin')->group(function () {
+    Route::get('/finanzas/dashboard', [AdminController::class, 'apiFinanzasDashboard']);
+    Route::post('/finanzas/verify-pin', [AdminController::class, 'apiFinanzasVerifyPin']);
+});
 });
